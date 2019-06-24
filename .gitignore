@@ -3,3 +3,4 @@ Lib
 Scripts
 pyvenv.cfg
 run.bat
+pip-selfcheck.json
