@@ -1,6 +1,9 @@
 Include
 Lib
 Scripts
+errors
 pyvenv.cfg
 run.bat
 pip-selfcheck.json
+_.bat
+chromedriver.exe
