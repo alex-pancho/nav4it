@@ -159,29 +159,25 @@ def open_u02(context, sec):
     sec= sec*MUX
     sleep(sec)
 
-@when('input "{fval}" in the "{fname}" field')
-def open_u06(context, fname, fval, fnone=None):
-    link_txt = None
+
+#INPUT
+@when('input "{fval}" in the "{field_name}" field')
+def open_u06(context, field_name, fval, fnone=None):
+    link = None
     xpath = ''
     
-    if fname == 'Email address':
-        xpath = '//*[@id="email"]'
-        lpath = '//label[@for="email"]'
-    if fname == 'Password':
-        xpath = '//*[@id="passwd"]'
-        lpath = '//label[@for="passwd"]'
+    path_dic = {
+               'Email address':'//*[@id="email"]',
+               'Password':'//*[@id="passwd"]',
+               'Search':'//*[@id="search_query_top"]'
+               }
+    if field_name in  path_dic:
+        xpath = path_dic[field_name]
+
     if xpath != '':
         link = xp(context, xpath)
-        link_txt = xp(context, lpath)
-        if link_txt is not None:
-            link_txt = link_txt.get_attribute('innerText')
-        else:
-            link_txt = "#&()??xx!!"
 
-    into = fname.lower().find(link_txt.lower())
-    if into == -1:
-        into = link_txt.lower().find(fname.lower())
-    assert into!=-1, 'field ' + fname + ' not found. Text '+link_txt
+    assert link is not None, f'field "{field_name}" not found.'
     link.clear()
     link.send_keys(fval)
 
@@ -190,14 +186,19 @@ def open_u06(context, fname, fval, fnone=None):
 def open_u09(context, button):
     link = None
     xpath = ''
-    if button == 'Sign in':
-        xpath = '//nav/div[@class="header_user_info"]/a'
-    if button == 'Sign':
-        xpath = '//*[@id="SubmitLogin"]'
-    
+    path_dic = {
+                'Sign in':'//nav/div[@class="header_user_info"]/a',
+                'Sign':'//*[@id="SubmitLogin"]',
+                'Search': '//*[@id="searchbox"]/button'
+               }
+               
+    if button in  path_dic:
+        xpath = path_dic[button]
+
     if xpath != '':
         link = xp(context, xpath)
-        link.click()
+        if link is not None: 
+            link.click()
         
     assert link is not None, f'button {button} not found. Get: %s' % (str(type(link)))
     
@@ -206,6 +207,29 @@ def open_u10(context, url):
     current_url = context.browser.current_url
     assert current_url == url, 'url of the page does not match the expected. Received url:' + current_url
 
+@then('count of "{field_name}" has "{fint}" items')
+def open_u19(context, field_name, fint):
+    
+    field_name =field_name.lower()
+    try:
+        c_int = int(fint)
+    except ValueError:
+        c_int = 0 
+    element = "0"
+    xpath = ''
+    allok= False
+    if field_name in["result item", "result items"]:
+        xpath = '//div[@class="product-container"]'
+    
+    if xpath !='':
+        elements = xxp(context, xpath)
+        if elements is not None:
+            if len(elements) == c_int:
+                allok= True
+            else:
+                element='%i elements' % len(elements)
+
+    assert allok== True, f'item {fint} in {field_name} not found, Find: {element}'
 
 
 

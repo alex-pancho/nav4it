@@ -10,3 +10,8 @@ Feature: Test cases in automationpractice site
         Examples: retail user
         | login | pass |
         | "testqa1@yopmail.com" | "qa123456" |
+    
+    Scenario: Use search
+        When input "Printed Dress" in the "Search" field
+        And click "Search" button
+        Then count of "result item" has "5" items
